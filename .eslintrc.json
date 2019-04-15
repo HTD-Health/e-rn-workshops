@@ -1,0 +1,21 @@
+{
+  "env": {
+    "node": true,
+    "react-native/react-native": true,
+    "es6": true
+  },
+  "parser": "babel-eslint",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react",
+    "plugin:react-native",
+    "prettier",
+    "prettier/react"
+  ],
+  "plugins": ["react", "react-native", "prettier"],
+  "rules": {
+    // "react/no-set-state": 0,
+    // "react/jsx-filename-extension": 0,
+    // "prettier/prettier": 2
+  }
+}
