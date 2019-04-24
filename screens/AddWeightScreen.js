@@ -10,6 +10,8 @@ import {
   View
 } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
+import { styles } from './styles'
+import { _storeData, _retrieveData } from '../helpers/AsyncStorage'
 
 export default class AddWeightScreen extends React.Component {
   static navigationOptions = {
@@ -17,53 +19,55 @@ export default class AddWeightScreen extends React.Component {
   }
 
   state = {
-    myWeight: null,
-    newWeight: {
+    myWeight: {
       weight: 90,
       date: new Date()
     }
   }
 
-  onAddWeight = () => {
-    const { newWeight } = this.state
-
-    this.setState({
-      myWeight: newWeight,
-      newWeight: {
-        weight: newWeight.weight,
-        date: new Date()
-      }
+  onAddWeight = async () => {
+    const { myWeight } = this.state
+    _retrieveData('myWeights').then(values => {
+      console.log('values', values)
+      _storeData('myWeights', [...(values || []), myWeight]).then(() => {
+        this.props.navigation.navigate('Home')
+        console.log('NAVIGATION')
+      })
     })
   }
 
-  onChangeNewDate = date => {
-    const {
-      myWeight: { weight }
-    } = this.state
+  onChange = key => value => {
+    console.log('key', key)
+    console.log('value', value)
     this.setState({
-      newWeight: { weight, date }
+      myWeight: { ...this.state.myWeight, [key]: value }
     })
   }
 
   render() {
     const AddWeightString = 'Add new Weight'
     const {
-      newWeight: { weight, date }
+      myWeight: { weight, date }
     } = this.state
 
     return (
       <View style={styles.container}>
-        <View>
-          <Text>{AddWeightString}</Text>
-          <TextInput keyboardType="numeric" value={String(weight)} />
+        <View style={styles.container}>
+          <Text style={styles.label}>{AddWeightString}</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={String(weight)}
+            onChangeText={this.onChange('weight')}
+          />
         </View>
-        <View>
+        <View style={styles.container}>
           {Platform.OS === 'ios' ? (
-            <DatePickerIOS date={date} onDateChange={this.onChangeNewDate} />
+            <DatePickerIOS date={date} onDateChange={this.onChange('date')} />
           ) : (
             <DatePickerAndroid
               date={date}
-              onDateChange={this.onChangeNewDate}
+              onDateChange={this.onChange('date')}
             />
           )}
 
@@ -75,10 +79,3 @@ export default class AddWeightScreen extends React.Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff'
-  }
-})

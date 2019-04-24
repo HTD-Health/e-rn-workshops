@@ -5,7 +5,7 @@ export const _storeData = async (itemName, data) => {
     await AsyncStorage.setItem(itemName, JSON.stringify(data))
     return true
   } catch (error) {
-    return value
+    return error
   }
 }
 

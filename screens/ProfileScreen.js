@@ -7,10 +7,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View
+  View,
+  Picker
 } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 import { _storeData, _retrieveData } from '../helpers/AsyncStorage'
+import { styles } from './styles'
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
@@ -21,10 +23,12 @@ export default class ProfileScreen extends React.Component {
     super(props)
 
     this.state = {
-      name: '',
-      height: '',
-      birthDate: '',
-      gender: '',
+      userData: {
+        name: '',
+        height: '',
+        birthDate: '',
+        gender: ''
+      },
       copyOfData: null
     }
 
@@ -32,10 +36,9 @@ export default class ProfileScreen extends React.Component {
   }
 
   getUserData = () => {
-    _retrieveData('userData').then(data => {
-      console.log('data', data)
-      if (data) {
-        this.setState({ ...data, copyOfData: data })
+    _retrieveData('userData').then(userData => {
+      if (userData) {
+        this.setState({ userData, copyOfData: userData })
       }
     })
   }
@@ -43,14 +46,14 @@ export default class ProfileScreen extends React.Component {
   onSave = () => {
     if (this.state.height !== this.state.copyOfData.height) {
       // calculate and save new bmi value
-      _storeData('userData', this.state).then(result => {
+      _storeData('userData', this.state.userData).then(result => {
         console.log('result on save data: ', result)
       })
     }
   }
 
   onChange = key => value => {
-    this.setState({ [key]: value })
+    this.setState({ userData: { ...this.state.userData, [key]: value } })
   }
   render() {
     const nameLabel = 'Name'
@@ -59,46 +62,53 @@ export default class ProfileScreen extends React.Component {
     const genderLabel = 'Gender'
     const saveLabel = 'Save'
 
-    const male = 'Male'
-    const female = 'Female'
-
-    const { name, height, birthDate, gender } = this.state
+    const {
+      userData: { name, height, birthDate, gender }
+    } = this.state
 
     return (
       <View style={styles.container}>
-        <View>
-          <Text>{nameLabel}</Text>
-          <TextInput value={name} onChangeText={this.onChange('name')} />
+        <View style={styles.container}>
+          <Text style={styles.label}>{nameLabel}</Text>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={this.onChange('name')}
+          />
         </View>
 
-        <View>
-          <Text>{heightLabel}</Text>
+        <View style={styles.container}>
+          <Text style={styles.label}>{heightLabel}</Text>
           <TextInput
+            style={styles.input}
             keyboardType="numeric"
             value={height}
             onChangeText={this.onChange('height')}
           />
         </View>
 
-        <View>
-          <Text>{birthDataLabel}</Text>
+        <View style={styles.container}>
+          <Text style={styles.label}>{birthDataLabel}</Text>
           <TextInput
+            style={styles.input}
             keyboardType="numeric"
             value={birthDate}
             onChangeText={this.onChange('birthDate')}
           />
         </View>
 
-        <View>
-          <Text>{genderLabel}</Text>
-          <TextInput
-            keyboardType="numeric"
-            value={gender}
-            onChangeText={this.onChange('gender')}
-          />
+        <View style={styles.container}>
+          <Text style={styles.label}>{genderLabel}</Text>
+          <Picker
+            style={styles.picker}
+            selectedValue={gender}
+            onValueChange={this.onChange('gender')}>
+            <Picker.Item label="Female" value="Female" />
+            <Picker.Item label="Male" value="Male" />
+          </Picker>
         </View>
 
-        <View>
+        <View style={styles.container}>
           <Button onPress={this.onSave} title={saveLabel} />
         </View>
 
@@ -107,10 +117,3 @@ export default class ProfileScreen extends React.Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff'
-  }
-})

@@ -6,16 +6,12 @@
   },
   "parser": "babel-eslint",
   "extends": [
-    "eslint:recommended",
-    "plugin:react",
-    "plugin:react-native",
+    "eslint:all",
+    "plugin:react:recommended",
+    "plugin:react-native:recommended",
     "prettier",
     "prettier/react"
   ],
   "plugins": ["react", "react-native", "prettier"],
-  "rules": {
-    // "react/no-set-state": 0,
-    // "react/jsx-filename-extension": 0,
-    // "prettier/prettier": 2
-  }
+  "rules": {}
 }
